@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { FaTrashAlt, FaPlus } from "react-icons/fa";
+import "./App.css";
 
 const API_URL = "http://localhost:8080/api/v1/student";
 
@@ -6,19 +8,16 @@ function App() {
   const [students, setStudents] = useState([]);
   const [form, setForm] = useState({ name: "", email: "", dob: "" });
 
-  // Fetch students
   const fetchStudents = async () => {
     const res = await fetch(API_URL);
     const data = await res.json();
     setStudents(data);
   };
 
-  // Handle input change
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Add new student
   const handleSubmit = async (e) => {
     e.preventDefault();
     await fetch(API_URL, {
@@ -30,7 +29,6 @@ function App() {
     fetchStudents();
   };
 
-  // Delete student
   const deleteStudent = async (id) => {
     await fetch(`${API_URL}/${id}`, { method: "DELETE" });
     fetchStudents();
@@ -41,10 +39,13 @@ function App() {
   }, []);
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Student Hub</h1>
+    <div className="container">
+      <header>
+        <h1>Student Hub</h1>
+        <p>Manage your students easily</p>
+      </header>
 
-      <form onSubmit={handleSubmit}>
+      <form className="form" onSubmit={handleSubmit}>
         <input
           name="name"
           placeholder="Name"
@@ -62,22 +63,31 @@ function App() {
         <input
           name="dob"
           type="date"
-          placeholder="DOB"
           value={form.dob}
           onChange={handleChange}
           required
         />
-        <button type="submit">Add Student</button>
+        <button type="submit">
+          <FaPlus /> Add Student
+        </button>
       </form>
 
-      <hr />
-
-      <h2>Student List</h2>
-      <ul>
-        {students.map((s) => (
-          <li key={s.id}>
-            <b>{s.name}</b> - {s.email} - {s.dob}
-            <button onClick={() => deleteStudent(s.id)}>❌ Delete</button>
+      <h2 className="list-title">Student List</h2>
+      <ul className="student-list">
+        {students.map((student) => (
+          <li key={student.id} className="student-card">
+            <div className="student-info">
+              <strong>{student.name}</strong>
+              <span>{student.email}</span>
+              <span>DOB: {student.dob}</span>
+            </div>
+            <button
+              className="delete-btn"
+              onClick={() => deleteStudent(student.id)}
+              title="Delete"
+            >
+              <FaTrashAlt />
+            </button>
           </li>
         ))}
       </ul>
